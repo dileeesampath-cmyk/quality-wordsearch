@@ -45,19 +45,18 @@ button{background:var(--pri);color:#fff;border:0;border-radius:8px;padding:11px 
 <div class="card hide" id="done"><h1>Thank you!</h1><p id="doneMsg"></p></div>
 </div>
 <script>
-// ====== SETTINGS (edit this URL if needed) ======
-const FLOW_URL = "PASTE_YOUR_POWER_AUTOMATE_OR_APPS_SCRIPT_URL_HERE";
+// ====== SETTINGS (edit these) ======
+const FLOW_URL = "https://script.google.com/macros/s/AKfycbw3bnFS_hdSdI4cgSWlUal6S5OYbdXOuXFUYbgM22YbKnu09OSLEuNgYzLqOlSGURKO/exec";
 const EVENT_NAME = "Quality Word Search";
-// ===============================================
+// ===================================
 const SETS={"A": ["AKBEIHUFXNHUGKEYSKLW", "IMKHSJJJQNZFVEWAMDQN", "MYFIGOPSGEDCVARIANCE", "FNVZMYAJFTEQTXMBWTLF", "ATCVFGZRVJZGAFRPDCAI", "CBPMSDCALWQAGZOUSWQS", "TPAWSORTEHZNLFOATPOH", "CYRUVHJOKCNTVOTLAWBB", "OWEULFPBZCLTLSCKNCBO", "NCTZOTMJHIZCGFARDGEN", "TQOQJRIZSDWHELUWATAE", "RFTNVKTJLSKAXESNRVQQ", "OZHNBAJLGHYRKZEFDCVJ", "LCJRIELAXHHTWBQAIJUS", "MCOKYDMMDEMINGMWZKXN", "CSDQUALITYIJRTQMAPYX", "CCUSTOMERFOCUSNGTEAH", "PQCSTORYFDCQZFQSIJGX", "MOERRORCFJKVFCYGOVUT", "XWIBXWFLTXUBMBVFNNVQ"], "B": ["HOQCSTORYPTZHCRSORTG", "PABNBUKQUWTQUSMMSPLJ", "AEHGDTRRXYROPTMSDCAR", "RRDIHUQUALITYAJVPRDT", "EWIZHLTNTOEBSNYRGZPK", "TKARHXTSGHCLVDIUGGJG", "OFIOOAWBWKZJKAGEEXMA", "ABMOJYWMKESCMRBVSFOL", "VGETJIRNKFWGIDFZYIVV", "GANCDEMINGVWLIAOUSXH", "JNGAAUQOWGGRAZCLKHXG", "CTQUVARIANCEVATWTBHK", "JTGSLTJFZOSYYTCMLONM", "SCIERRGCXCLHWIOFZNWH", "VHWFWBXHNSIPHONTAECC", "PACZBZYWKMKQJNTRGIZA", "XRTQMLWCUSTOMERFOCUS", "XTHBGKRNQGQKEGOLUUOA", "QEADEPDCATHNPRLTTIVL", "JVPIERROREAKLSGLPBOB"], "C": ["QQCSTORYQBGVIECNELEW", "WEKJIICUSTOMERFOCUSW", "WNEBVWFSUARVGUNBVPJJ", "BPDCAYATGDOERRORMDUW", "SWDIUCCAZKOEMEWWXRLV", "PQDMOKTNTLTNJQUALITY", "ZSGBBZCDLECWZXXCKRFD", "WANAXMOAFDAVARIANCEU", "PFQZFLNRTCUBVSORTQMO", "ASOUIOTDRSSTQQQUMBRS", "RUXRHRRIGVELOSDCAHCP", "EADDCQOZAHTVPJOIFVWJ", "TZUEPVLANYOUVTEFIOPF", "OYSKRGITTTCBQEVFSZBP", "VTIEKUWITCBELTKXHVSP", "CVBCFWMOCDPVBBUEBTXD", "MQJJPCFNHJNITACVOMAS", "FBZIDANAARXUOSRYNKKL", "NMIPTHKIRROLGMYAEVAU", "HDEMINGMTCFKBUQHQRKW"]};
 const WORDS=["Customer Focus","Error","Gantt Chart","Fishbone","Standardization","Sort","Root Cause","Deming","FTR (First Time Right)","Variance","TQM","Quality","Fact Control","Pareto","QC Story","PDCA","SDCA","AIM"];
 const L="ABCDEFGHIJKLMNOPQRST";
-const $=id=>document.getElementById(id);
-
+const q=new URLSearchParams(location.search);
 let SET="A";
 let G=SETS.A;
+const $=id>document.getElementById(id)
 let ans={},active=null,pend=null,t0=0,tabs=0,timer=null,emp="",name="";
-
 const cellId=(r,c)=>L[c]+(r+1);
 function parse(id){return[parseInt(id.slice(1))-1,L.indexOf(id[0])]}
 function line(a,b){
@@ -95,48 +94,28 @@ function tap(id){
  ans[active]=[pend,id];pend=null;
  active=WORDS.find(w=>!ans[w])||null;paint();
 }
-
 $("go").onclick=()=>{
  emp=$("eid").value.trim();name=$("nm").value.trim();
  if(!emp||!name){$("err").textContent="Please enter both Employee ID and name.";return}
 
- // Automatic set assignment: Set 1 (A), Set 2 (B), Set 3 (C)
- const numOnly = emp.replace(/\D/g, "");
- const numId = numOnly ? parseInt(numOnly, 10) : 0;
- const setKeys = ["A", "B", "C"];
- SET = setKeys[numId % 3];
+ // Pick Set based on the numbers in Employee ID
+ const numId = parseInt(emp.replace(/\D/g, "")) || 0;
+ const setList = ["A", "B", "C"];
+ SET = setList[numId % 3];
  G = SETS[SET];
 
  try{if(localStorage.getItem("ws_done_"+SET+"_"+emp)){$("err").textContent="This Employee ID has already submitted this set.";return}}catch(e){}
- 
- $("login").classList.add("hide");
- $("game").classList.remove("hide");
- $("who").textContent=name+" ("+emp+") - Set "+(SET==="A"?"1":SET==="B"?"2":"3");
- t0=Date.now();
- active=WORDS[0];
- paint();
- timer=setInterval(()=>{
-  const s=Math.floor((Date.now()-t0)/1000);
-  $("clock").textContent=String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
- },1000);
+ $("login").classList.add("hide");$("game").classList.remove("hide");
+ $("who").textContent=name+" ("+emp+") - Set "+SET;
+ t0=Date.now();active=WORDS[0];paint();
+ timer=setInterval(()=>{const s=Math.floor((Date.now()-t0)/1000);$("clock").textContent=String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")},1000);
 };
-
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&t0)tabs++});
-
 $("submit").onclick=async()=>{
  const n=Object.keys(ans).length;
  if(n<WORDS.length&&!confirm("You have marked "+n+" of "+WORDS.length+" words. Submit anyway?"))return;
  const out={};WORDS.forEach(w=>{out[w]=ans[w]?ans[w][0]+"-"+ans[w][1]:""});
- const body={
-  event:EVENT_NAME,
-  set:SET==="A"?"1":SET==="B"?"2":"3",
-  employeeId:emp,
-  name:name,
-  secondsTaken:Math.round((Date.now()-t0)/1000),
-  tabSwitches:tabs,
-  submittedAt:new Date().toISOString(),
-  answers:out
- };
+ const body={event:EVENT_NAME,set:SET,employeeId:emp,name:name,secondsTaken:Math.round((Date.now()-t0)/1000),tabSwitches:tabs,submittedAt:new Date().toISOString(),answers:out};
  $("submit").disabled=true;$("submit").textContent="Sending…";
  try{
   await fetch(FLOW_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(body)});
