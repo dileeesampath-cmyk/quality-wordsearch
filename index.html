@@ -3,24 +3,91 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Quality Word Search</title>
 <style>
-:root{--bg:#f4f6fa;--card:#fff;--ink:#1d2433;--mute:#667085;--line:#cfd6e4;--pri:#0f5fd7;--sel:#ffd54a;--done:#b9e6c3}
-@media (prefers-color-scheme:dark){:root{--bg:#12151c;--card:#1c212c;--ink:#e8ecf4;--mute:#9aa4b5;--line:#364055;--pri:#6aa3ff;--sel:#8a6d00;--done:#1f5a30}}
-*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
-.wrap{max-width:760px;margin:0 auto;padding:12px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
-h1{font-size:20px;margin:0 0 6px}p{margin:4px 0;color:var(--mute);font-size:14px}
-input{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:16px;background:var(--bg);color:var(--ink);margin:6px 0}
-button{background:var(--pri);color:#fff;border:0;border-radius:8px;padding:11px 16px;font-size:16px;cursor:pointer}
-#grid{display:grid;grid-template-columns:repeat(21,1fr);gap:1px;background:var(--line);border:1px solid var(--line);user-select:none;touch-action:manipulation}
-#grid div{background:var(--card);aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:clamp(9px,2.7vw,16px);cursor:pointer}
-#grid .h{background:#d9e2f3;color:#223;font-size:clamp(7px,2vw,11px);cursor:default}
-#grid .s{background:var(--sel)}#grid .d{background:var(--done)}
-#words{display:flex;flex-wrap:wrap;gap:8px}
-#words button{background:var(--card);color:var(--ink);border:1px solid var(--line);padding:8px 12px;font-size:13px;line-height:1.3;text-align:left;border-radius:6px;transition:all 0.15s ease}
-#words button.on{border-color:var(--pri);box-shadow:0 0 0 2px var(--pri);background:#eff6ff}
-#words button.set{background:var(--done);color:#14532d;border-color:#86efac;text-decoration:line-through;opacity:0.85}
-.bar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-.hide{display:none}.msg{font-weight:600}
+:root {
+  --bg: #f4f6fa;
+  --card: #ffffff;
+  --ink: #0f172a;
+  --mute: #475569;
+  --line: #cbd5e1;
+  --pri: #0f5fd7;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --ink: #f8fafc;
+    --mute: #94a3b8;
+    --line: #334155;
+    --pri: #3b82f6;
+  }
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--ink); }
+.wrap { max-width: 760px; margin: 0 auto; padding: 12px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+h1 { font-size: 20px; margin: 0 0 6px; }
+p { margin: 4px 0; color: var(--mute); font-size: 14px; }
+input { width: 100%; padding: 12px; border: 1.5px solid var(--line); border-radius: 8px; font-size: 16px; background: var(--bg); color: var(--ink); margin: 8px 0; }
+button { background: var(--pri); color: #fff; border: 0; border-radius: 8px; padding: 11px 18px; font-size: 16px; font-weight: 600; cursor: pointer; }
+
+/* Grid styling with high contrast */
+#grid { display: grid; grid-template-columns: repeat(21, 1fr); gap: 1.5px; background: var(--line); border: 2px solid var(--line); user-select: none; touch-action: manipulation; border-radius: 6px; overflow: hidden; }
+#grid div { background: var(--card); color: var(--ink); aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: clamp(9px, 2.7vw, 16px); cursor: pointer; transition: background 0.1s ease; }
+#grid .h { background: #64748b; color: #ffffff !important; font-size: clamp(7px, 2vw, 11px); font-weight: 800; cursor: default; }
+
+/* Cell highlight states - ultra clear & dark contrast */
+#grid .s { 
+  background: #f59e0b !important; 
+  color: #000000 !important; 
+  font-weight: 900 !important;
+  box-shadow: inset 0 0 0 1.5px #b45309;
+}
+#grid .d { 
+  background: #16a34a !important; 
+  color: #ffffff !important; 
+  font-weight: 900 !important;
+}
+
+/* Clue Buttons */
+#words { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+#words button {
+  background: var(--card);
+  color: var(--ink);
+  border: 1.5px solid var(--line);
+  padding: 10px 14px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  text-align: left;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  font-weight: 500;
+}
+
+/* ACTIVE SELECTED CLUE BUTTON: Deep vibrant blue with crisp bold white text */
+#words button.on {
+  background: #1d4ed8 !important;
+  color: #ffffff !important;
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.45) !important;
+  font-weight: 700 !important;
+  transform: translateY(-1px);
+}
+
+/* COMPLETED / SOLVED CLUE BUTTON */
+#words button.set {
+  background: #15803d !important;
+  color: #ffffff !important;
+  border-color: #22c55e !important;
+  text-decoration: line-through;
+  opacity: 0.85;
+  font-weight: 600;
+}
+
+.bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.hide { display: none; }
+.msg { font-weight: 700; color: var(--pri); }
 </style></head><body><div class="wrap">
 
 <div class="card" id="login">
@@ -29,17 +96,17 @@ button{background:var(--pri);color:#fff;border:0;border-radius:8px;padding:11px 
  <input id="eid" placeholder="Employee ID" autocomplete="off">
  <input id="nm" placeholder="Full name" autocomplete="off">
  <button id="go">Start</button>
- <p id="err" style="color:#c0392b"></p>
+ <p id="err" style="color:#ef4444;font-weight:600;margin-top:6px"></p>
 </div>
 
 <div id="game" class="hide">
  <div class="card">
-  <div class="bar"><b id="who"></b><b id="clock">00:00</b></div>
-  <p>1) Tap a <b>clue / hint</b> below. 2) Tap its <b>first letter</b>, then its <b>last letter</b> in the grid (across or down). Tap the clue again to re-attempt.</p>
+  <div class="bar"><b id="who" style="font-size:15px"></b><b id="clock" style="font-size:18px;color:var(--pri)">00:00</b></div>
+  <p style="margin-top:6px">1) Tap a <b>hint</b> below. 2) Tap its <b>first letter</b>, then its <b>last letter</b> in the grid. Tap the clue again to change your answer.</p>
  </div>
  <div class="card"><div id="grid"></div></div>
  <div class="card">
-  <p style="font-weight:600;margin-bottom:8px">Clues / Hints (Tap a clue, then mark in grid):</p>
+  <p style="font-weight:700;margin:0 0 6px;color:var(--ink)">Hints (Tap a hint, then locate and tap its letters on the grid):</p>
   <div id="words"></div>
  </div>
  <div class="card bar"><span id="count" class="msg"></span><button id="submit">Submit answers</button></div>
@@ -47,133 +114,212 @@ button{background:var(--pri);color:#fff;border:0;border-radius:8px;padding:11px 
 
 <div class="card hide" id="done"><h1>Thank you!</h1><p id="doneMsg"></p></div>
 </div>
+
 <script>
-// ====== SETTINGS (edit this URL with your Google Script URL) ======
+// ====== SETTINGS (Replace with your Google Apps Script Web App URL) ======
 const FLOW_URL = "https://script.google.com/macros/s/AKfycbw3bnFS_hdSdI4cgSWlUal6S5OYbdXOuXFUYbgM22YbKnu09OSLEuNgYzLqOlSGURKO/exec";
-const EVENT_NAME = "Quality Word Search";
-// =================================================================
-const SETS={"A": ["AKBEIHUFXNHUGKEYSKLW", "IMKHSJJJQNZFVEWAMDQN", "MYFIGOPSGEDCVARIANCE", "FNVZMYAJFTEQTXMBWTLF", "ATCVFGZRVJZGAFRPDCAI", "CBPMSDCALWQAGZOUSWQS", "TPAWSORTEHZNLFOATPOH", "CYRUVHJOKCNTVOTLAWBB", "OWEULFPBZCLTLSCKNCBO", "NCTZOTMJHIZCGFARDGEN", "TQOQJRIZSDWHELUWATAE", "RFTNVKTJLSKAXESNRVQQ", "OZHNBAJLGHYRKZEFDCVJ", "LCJRIELAXHHTWBQAIJUS", "MCOKYDMMDEMINGMWZKXN", "CSDQUALITYIJRTQMAPYX", "CCUSTOMERFOCUSNGTEAH", "PQCSTORYFDCQZFQSIJGX", "MOERRORCFJKVFCYGOVUT", "XWIBXWFLTXUBMBVFNNVQ"], "B": ["HOQCSTORYPTZHCRSORTG", "PABNBUKQUWTQUSMMSPLJ", "AEHGDTRRXYROPTMSDCAR", "RRDIHUQUALITYAJVPRDT", "EWIZHLTNTOEBSNYRGZPK", "TKARHXTSGHCLVDIUGGJG", "OFIOOAWBWKZJKAGEEXMA", "ABMOJYWMKESCMRBVSFOL", "VGETJIRNKFWGIDFZYIVV", "GANCDEMINGVWLIAOUSXH", "JNGAAUQOWGGRAZCLKHXG", "CTQUVARIANCEVATWTBHK", "JTGSLTJFZOSYYTCMLONM", "SCIERRGCXCLHWIOFZNWH", "VHWFWBXHNSIPHONTAECC", "PACZBZYWKMKQJNTRGIZA", "XRTQMLWCUSTOMERFOCUS", "XTHBGKRNQGQKEGOLUUOA", "QEADEPDCATHNPRLTTIVL", "JVPIERROREAKLSGLPBOB"], "C": ["QQCSTORYQBGVIECNELEW", "WEKJIICUSTOMERFOCUSW", "WNEBVWFSUARVGUNBVPJJ", "BPDCAYATGDOERRORMDUW", "SWDIUCCAZKOEMEWWXRLV", "PQDMOKTNTLTNJQUALITY", "ZSGBBZCDLECWZXXCKRFD", "WANAXMOAFDAVARIANCEU", "PFQZFLNRTCUBVSORTQMO", "ASOUIOTDRSSTQQQUMBRS", "RUXRHRRIGVELOSDCAHCP", "EADDCQOZAHTVPJOIFVWJ", "TZUEPVLANYOUVTEFIOPF", "OYSKRGITTTCBQEVFSZBP", "VTIEKUWITCBELTKXHVSP", "CVBCFWMOCDPVBBUEBTXD", "MQJJPCFNHJNITACVOMAS", "FBZIDANAARXUOSRYNKKL", "NMIPTHKIRROLGMYAEVAU", "HDEMINGMTCFKBUQHQRKW"]};
+const EVENT_NAME = "Quality Word quest";
+// =========================================================================
 
-const WORD_CLUES = [
-  { word: "Customer Focus", hint: "💡 Primary pillar of TQM mindset" },
-  { word: "Error",          hint: "💡 Mistake or defect to eliminate" },
-  { word: "Gantt Chart",    hint: "💡 Visual project milestone schedule" },
-  { word: "Fishbone",       hint: "💡 Ishikawa Cause & Effect diagram" },
-  { word: "Standardization",hint: "💡 Locking baseline to prevent recurrence" },
-  { word: "Sort",           hint: "💡 1S of 5S (Seiri)" },
-  { word: "Root Cause",     hint: "💡 Ultimate origin identified via 5-Why" },
-  { word: "Deming",         hint: "💡 Father of modern quality control" },
-  { word: "FTR (First Time Right)", hint: "💡 Zero rework on the first attempt" },
-  { word: "Variance",       hint: "💡 Deviation from target specification" },
-  { word: "TQM",            hint: "💡 Total Quality Management" },
-  { word: "Quality",        hint: "💡 Conformance to customer requirements" },
-  { word: "Fact Control",   hint: "💡 Data-driven decision making" },
-  { word: "Pareto",         hint: "💡 80/20 rule analysis" },
-  { word: "QC Story",       hint: "💡 Structured 7-step problem solving" },
-  { word: "PDCA",           hint: "💡 Continuous improvement cycle" },
-  { word: "SDCA",           hint: "💡 Standardize-Do-Check-Act cycle" },
-  { word: "AIM",            hint: "💡 Idea contest / Target" }
-];
-
-const WORDS = WORD_CLUES.map(item => item.word);
-const L="ABCDEFGHIJKLMNOPQRST";
-const $=id=>document.getElementById(id);
-
-let SET="A";
-let G=SETS.A;
-let ans={},active=null,pend=null,t0=0,tabs=0,timer=null,emp="",name="";
-
-const cellId=(r,c)=>L[c]+(r+1);
-function parse(id){return[parseInt(id.slice(1))-1,L.indexOf(id[0])]}
-function line(a,b){
- const [r1,c1]=parse(a),[r2,c2]=parse(b);
- if(r1!==r2&&c1!==c2)return[a];
- const n=Math.max(Math.abs(r2-r1),Math.abs(c2-c1))+1,out=[];
- for(let i=0;i<n;i++)out.push(cellId(r1+Math.sign(r2-r1)*i,c1+Math.sign(c2-c1)*i));
- return out;
-}
-function paint(){
- const g=$("grid");g.innerHTML="";
- g.appendChild(Object.assign(document.createElement("div"),{className:"h"}));
- for(const ch of L){g.appendChild(Object.assign(document.createElement("div"),{className:"h",textContent:ch}))}
- const mark={};
- for(const w in ans){line(ans[w][0],ans[w][1]).forEach(x=>mark[x]="d")}
- if(pend)mark[pend]="s";
- G.forEach((row,r)=>{
-  g.appendChild(Object.assign(document.createElement("div"),{className:"h",textContent:r+1}));
-  for(let c=0;c<20;c++){
-   const id=cellId(r,c),d=document.createElement("div");
-   d.textContent=row[c];if(mark[id])d.className=mark[id];
-   d.onclick=()=>tap(id);g.appendChild(d)}
- });
- $("words").innerHTML="";
- WORD_CLUES.forEach(item=>{
-  const w=item.word;
-  const b=document.createElement("button");
-  b.textContent=item.hint;
-  if(ans[w])b.className="set";
-  if(w===active)b.className+=" on";
-  b.onclick=()=>{active=w;pend=null;delete ans[w];paint()};
-  $("words").appendChild(b);
- });
- $("count").textContent=Object.keys(ans).length+" of "+WORDS.length+" clues solved";
-}
-function tap(id){
- if(!active){$("count").textContent="First tap a clue from the list below.";return}
- if(!pend){pend=id;paint();return}
- const [r1,c1]=parse(pend),[r2,c2]=parse(id);
- if((r1!==r2&&c1!==c2)||r2<r1||c2<c1){pend=id;paint();return}
- ans[active]=[pend,id];pend=null;
- active=WORDS.find(w=>!ans[w])||null;paint();
-}
-
-$("go").onclick=()=>{
- emp=$("eid").value.trim();name=$("nm").value.trim();
- if(!emp||!name){$("err").textContent="Please enter both Employee ID and name.";return}
-
- // Automatic set assignment: Set 1 (A), Set 2 (B), Set 3 (C)
- const numOnly = emp.replace(/\D/g, "");
- const numId = numOnly ? parseInt(numOnly, 10) : 0;
- const setKeys = ["A", "B", "C"];
- SET = setKeys[numId % 3];
- G = SETS[SET];
-
- try{if(localStorage.getItem("ws_done_"+SET+"_"+emp)){$("err").textContent="This Employee ID has already submitted this set.";return}}catch(e){}
- 
- $("login").classList.add("hide");
- $("game").classList.remove("hide");
- $("who").textContent=name+" ("+emp+") - Set "+(SET==="A"?"1":SET==="B"?"2":"3");
- t0=Date.now();
- active=WORDS[0];
- paint();
- timer=setInterval(()=>{
-  const s=Math.floor((Date.now()-t0)/1000);
-  $("clock").textContent=String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
- },1000);
+const SETS = {
+  "A": ["AKBEIHUFXNHUGKEYSKLW", "IMKHSJJJQNZFVEWAMDQN", "MYFIGOPSGEDCVARIANCE", "FNVZMYAJFTEQTXMBWTLF", "ATCVFGZRVJZGAFRPDCAI", "CBPMSDCALWQAGZOUSWQS", "TPAWSORTEHZNLFOATPOH", "CYRUVHJOKCNTVOTLAWBB", "OWEULFPBZCLTLSCKNCBO", "NCTZOTMJHIZCGFARDGEN", "TQOQJRIZSDWHELUWATAE", "RFTNVKTJLSKAXESNRVQQ", "OZHNBAJLGHYRKZEFDCVJ", "LCJRIELAXHHTWBQAIJUS", "MCOKYDMMDEMINGMWZKXN", "CSDQUALITYIJRTQMAPYX", "CCUSTOMERFOCUSNGTEAH", "PQCSTORYFDCQZFQSIJGX", "MOERRORCFJKVFCYGOVUT", "XWIBXWFLTXUBMBVFNNVQ"],
+  "B": ["HOQCSTORYPTZHCRSORTG", "PABNBUKQUWTQUSMMSPLJ", "AEHGDTRRXYROPTMSDCAR", "RRDIHUQUALITYAJVPRDT", "EWIZHLTNTOEBSNYRGZPK", "TKARHXTSGHCLVDIUGGJG", "OFIOOAWBWKZJKAGEEXMA", "ABMOJYWMKESCMRBVSFOL", "VGETJIRNKFWGIDFZYIVV", "GANCDEMINGVWLIAOUSXH", "JNGAAUQOWGGRAZCLKHXG", "CTQUVARIANCEVATWTBHK", "JTGSLTJFZOSYYTCMLONM", "SCIERRGCXCLHWIOFZNWH", "VHWFWBXHNSIPHONTAECC", "PACZBZYWKMKQJNTRGIZA", "XRTQMLWCUSTOMERFOCUS", "XTHBGKRNQGQKEGOLUUOA", "QEADEPDCATHNPRLTTIVL", "JVPIERROREAKLSGLPBOB"],
+  "C": ["QQCSTORYQBGVIECNELEW", "WEKJIICUSTOMERFOCUSW", "WNEBVWFSUARVGUNBVPJJ", "BPDCAYATGDOERRORMDUW", "SWDIUCCAZKOEMEWWXRLV", "PQDMOKTNTLTNJQUALITY", "ZSGBBZCDLECWZXXCKRFD", "WANAXMOAFDAVARIANCEU", "PFQZFLNRTCUBVSORTQMO", "ASOUIOTDRSSTQQQUMBRS", "RUXRHRRIGVELOSDCAHCP", "EADDCQOZAHTVPJOIFVWJ", "TZUEPVLANYOUVTEFIOPF", "OYSKRGITTTCBQEVFSZBP", "VTIEKUWITCBELTKXHVSP", "CVBCFWMOCDPVBBUEBTXD", "MQJJPCFNHJNITACVOMAS", "FBZIDANAARXUOSRYNKKL", "NMIPTHKIRROLGMYAEVAU", "HDEMINGMTCFKBUQHQRKW"]
 };
 
-document.addEventListener("visibilitychange",()=>{if(document.hidden&&t0)tabs++});
+// 18 Hints directly from the contest document (clues alone, answers excluded)
+const CLUES = [
+  { word: "AIM", hint: "1. The platform where you can submit your ideas (abbreviated)" },
+  { word: "Customer Focus", hint: "2. Understanding and consistently meeting customer needs – One of the TQM principles" },
+  { word: "Deming", hint: "3. The name of the Quality Guru who popularized the PDCA cycle" },
+  { word: "SDCA", hint: "4. The cycle followed to sustain and maintain improved processes (applied after PDCA)" },
+  { word: "Fact Control", hint: "5. Making decisions based on data, not assumptions – One of the TQM principles" },
+  { word: "Fishbone", hint: "6. Also known as the Cause-and-Effect Diagram or Ishikawa Diagram" },
+  { word: "FTR (First Time Right)", hint: "7. Achieving the desired outcome correctly on the first attempt (abbreviated)" },
+  { word: "Gantt Chart", hint: "8. A project planning tool or chart used to visually track activities, timelines, and progress" },
+  { word: "Pareto", hint: "9. A quality tool used to identify and prioritize the "vital few" causes based on the 80:20 principle" },
+  { word: "PDCA", hint: "10. A four-step approach used to drive continuous improvement" },
+  { word: "QC Story", hint: "11. A seven-step problem-solving methodology used in quality improvement when a metric has not been achieved for three consecutive months" },
+  { word: "Quality", hint: "12. Meeting customer requirements and anticipating future customer needs / Hashtag: “____ starts with me”" },
+  { word: "Root Cause", hint: "13. Why-Why Analysis is performed to identify this during problem-solving" },
+  { word: "Sort", hint: "14. The first step in 5S / The activity of removing unnecessary items from the workplace" },
+  { word: "Standardization", hint: "15. The act of communicating process changes to stakeholders / Ensures consistent results across everyone / Step in QC Story" },
+  { word: "Error", hint: "16. An unintended defect, flaw, or mistake to be eliminated" },
+  { word: "TQM", hint: "17. A set of systematic activities carried out effectively and efficiently by the entire organization" },
+  { word: "Variance", hint: "18. The gap between actual and expected performance" }
+];
 
-$("submit").onclick=async()=>{
- const n=Object.keys(ans).length;
- if(n<WORDS.length&&!confirm("You have solved "+n+" of "+WORDS.length+" clues. Submit anyway?"))return;
- const out={};WORDS.forEach(w=>{out[w]=ans[w]?ans[w][0]+"-"+ans[w][1]:""});
- const body={
-  event:EVENT_NAME,
-  set:SET==="A"?"1":SET==="B"?"2":"3",
-  employeeId:emp,
-  name:name,
-  secondsTaken:Math.round((Date.now()-t0)/1000),
-  tabSwitches:tabs,
-  submittedAt:new Date().toISOString(),
-  answers:out
- };
- $("submit").disabled=true;$("submit").textContent="Sending…";
- try{
-  await fetch(FLOW_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(body)});
-  try{localStorage.setItem("ws_done_"+SET+"_"+emp,"1")}catch(e){}
-  clearInterval(timer);$("game").classList.add("hide");$("done").classList.remove("hide");
-  $("doneMsg").textContent="Your answers were submitted at "+new Date().toLocaleTimeString()+". Results will be announced by the organisers.";
- }catch(e){$("submit").disabled=false;$("submit").textContent="Submit answers";alert("Could not submit. Check your connection and try again.")}
+const WORDS = CLUES.map(item => item.word);
+const L = "ABCDEFGHIJKLMNOPQRST";
+const $ = id => document.getElementById(id);
+
+let SET = "A";
+let G = SETS.A;
+let ans = {}, active = null, pend = null, t0 = 0, tabs = 0, timer = null, emp = "", name = "";
+
+const cellId = (r, c) => L[c] + (r + 1);
+function parse(id) { return [parseInt(id.slice(1)) - 1, L.indexOf(id[0])]; }
+
+function line(a, b) {
+  const [r1, c1] = parse(a), [r2, c2] = parse(b);
+  if (r1 !== r2 && c1 !== c2) return [a];
+  const n = Math.max(Math.abs(r2 - r1), Math.abs(c2 - c1)) + 1, out = [];
+  for (let i = 0; i < n; i++) {
+    out.push(cellId(r1 + Math.sign(r2 - r1) * i, c1 + Math.sign(c2 - c1) * i));
+  }
+  return out;
+}
+
+function paint() {
+  const g = $("grid");
+  g.innerHTML = "";
+  
+  // Header letters
+  g.appendChild(Object.assign(document.createElement("div"), { className: "h" }));
+  for (const ch of L) {
+    g.appendChild(Object.assign(document.createElement("div"), { className: "h", textContent: ch }));
+  }
+  
+  const mark = {};
+  for (const w in ans) {
+    line(ans[w][0], ans[w][1]).forEach(x => mark[x] = "d");
+  }
+  if (pend) mark[pend] = "s";
+  
+  G.forEach((row, r) => {
+    g.appendChild(Object.assign(document.createElement("div"), { className: "h", textContent: r + 1 }));
+    for (let c = 0; c < 20; c++) {
+      const id = cellId(r, c), d = document.createElement("div");
+      d.textContent = row[c];
+      if (mark[id]) d.className = mark[id];
+      d.onclick = () => tap(id);
+      g.appendChild(d);
+    }
+  });
+  
+  $("words").innerHTML = "";
+  CLUES.forEach(item => {
+    const w = item.word;
+    const b = document.createElement("button");
+    b.textContent = item.hint;
+    if (ans[w]) b.className = "set";
+    if (w === active) b.className += " on";
+    b.onclick = () => {
+      active = w;
+      pend = null;
+      delete ans[w];
+      paint();
+    };
+    $("words").appendChild(b);
+  });
+  
+  $("count").textContent = Object.keys(ans).length + " of " + WORDS.length + " hints solved";
+}
+
+function tap(id) {
+  if (!active) {
+    $("count").textContent = "Please tap a hint from the list below first.";
+    return;
+  }
+  if (!pend) {
+    pend = id;
+    paint();
+    return;
+  }
+  const [r1, c1] = parse(pend), [r2, c2] = parse(id);
+  if ((r1 !== r2 && c1 !== c2) || r2 < r1 || c2 < c1) {
+    pend = id;
+    paint();
+    return;
+  }
+  ans[active] = [pend, id];
+  pend = null;
+  active = WORDS.find(w => !ans[w]) || null;
+  paint();
+}
+
+$("go").onclick = () => {
+  emp = $("eid").value.trim();
+  name = $("nm").value.trim();
+  if (!emp || !name) {
+    $("err").textContent = "Please enter both Employee ID and full name.";
+    return;
+  }
+
+  // Automatic Set assignment (1, 2, or 3)
+  const numOnly = emp.replace(/\D/g, "");
+  const numId = numOnly ? parseInt(numOnly, 10) : 0;
+  const setKeys = ["A", "B", "C"];
+  SET = setKeys[numId % 3];
+  G = SETS[SET];
+
+  try {
+    if (localStorage.getItem("ws_done_" + SET + "_" + emp)) {
+      $("err").textContent = "This Employee ID has already submitted this puzzle.";
+      return;
+    }
+  } catch (e) {}
+
+  $("login").classList.add("hide");
+  $("game").classList.remove("hide");
+  $("who").textContent = name + " (" + emp + ") - Set " + (SET === "A" ? "1" : SET === "B" ? "2" : "3");
+  t0 = Date.now();
+  active = WORDS[0];
+  paint();
+
+  timer = setInterval(() => {
+    const s = Math.floor((Date.now() - t0) / 1000);
+    $("clock").textContent = String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+  }, 1000);
+};
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && t0) tabs++;
+});
+
+$("submit").onclick = async () => {
+  const n = Object.keys(ans).length;
+  if (n < WORDS.length && !confirm("You have solved " + n + " of " + WORDS.length + " hints. Submit anyway?")) {
+    return;
+  }
+  
+  const out = {};
+  WORDS.forEach(w => {
+    out[w] = ans[w] ? ans[w][0] + "-" + ans[w][1] : "";
+  });
+
+  const body = {
+    event: EVENT_NAME,
+    set: SET === "A" ? "1" : SET === "B" ? "2" : "3",
+    employeeId: emp,
+    name: name,
+    secondsTaken: Math.round((Date.now() - t0) / 1000),
+    tabSwitches: tabs,
+    submittedAt: new Date().toISOString(),
+    answers: out
+  };
+
+  $("submit").disabled = true;
+  $("submit").textContent = "Sending…";
+
+  try {
+    await fetch(FLOW_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify(body)
+    });
+    try {
+      localStorage.setItem("ws_done_" + SET + "_" + emp, "1");
+    } catch (e) {}
+    clearInterval(timer);
+    $("game").classList.add("hide");
+    $("done").classList.remove("hide");
+    $("doneMsg").textContent = "Your answers were submitted at " + new Date().toLocaleTimeString() + ". Results will be recorded in the official leaderboard.";
+  } catch (e) {
+    $("submit").disabled = false;
+    $("submit").textContent = "Submit answers";
+    alert("Could not submit. Check your network connection and try again.");
+  }
 };
 </script></body></html>
