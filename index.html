@@ -53,10 +53,9 @@ const SETS={"A": ["AKBEIHUFXNHUGKEYSKLW", "IMKHSJJJQNZFVEWAMDQN", "MYFIGOPSGEDCV
 const WORDS=["Customer Focus","Error","Gantt Chart","Fishbone","Standardization","Sort","Root Cause","Deming","FTR (First Time Right)","Variance","TQM","Quality","Fact Control","Pareto","QC Story","PDCA","SDCA","AIM"];
 const L="ABCDEFGHIJKLMNOPQRST";
 const q=new URLSearchParams(location.search);
-const SET=(q.get("set")||"A").toUpperCase();
-const G=SETS[SET]||SETS.A;
-const $=id=>document.getElementById(id);
-$("title").textContent=EVENT_NAME+" – Set "+SET;
+let SET="A";
+let G=SETS.A;
+const $=id>document.getElementById(id)
 let ans={},active=null,pend=null,t0=0,tabs=0,timer=null,emp="",name="";
 const cellId=(r,c)=>L[c]+(r+1);
 function parse(id){return[parseInt(id.slice(1))-1,L.indexOf(id[0])]}
@@ -98,9 +97,17 @@ function tap(id){
 $("go").onclick=()=>{
  emp=$("eid").value.trim();name=$("nm").value.trim();
  if(!emp||!name){$("err").textContent="Please enter both Employee ID and name.";return}
+
+ // Pick Set based on the numbers in Employee ID
+ const numId = parseInt(emp.replace(/\D/g, "")) || 0;
+ const setList = ["A", "B", "C"];
+ SET = setList[numId % 3];
+ G = SETS[SET];
+
  try{if(localStorage.getItem("ws_done_"+SET+"_"+emp)){$("err").textContent="This Employee ID has already submitted this set.";return}}catch(e){}
  $("login").classList.add("hide");$("game").classList.remove("hide");
- $("who").textContent=name+" ("+emp+")";t0=Date.now();active=WORDS[0];paint();
+ $("who").textContent=name+" ("+emp+") - Set "+SET;
+ t0=Date.now();active=WORDS[0];paint();
  timer=setInterval(()=>{const s=Math.floor((Date.now()-t0)/1000);$("clock").textContent=String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")},1000);
 };
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&t0)tabs++});
